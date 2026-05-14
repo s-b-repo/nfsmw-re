@@ -1,0 +1,150 @@
+NFS Most Wanted (2005) — speed.exe reverse engineering plan & progress
+Updated: 2026-05-14 (end of wave-5)
+
+═════════════════════════════════════════════════════════════════════════════
+Current state vs target for "fully editable in Visual Studio"
+═════════════════════════════════════════════════════════════════════════════
+
+  ┌────────────────────────────────────────┬──────────────────┬──────────────────────────────────────────────────────────────────────────┐
+  │                 Metric                 │  Current (5/14)  │                   Target for "editable in VS"                            │
+  ├────────────────────────────────────────┼──────────────────┼──────────────────────────────────────────────────────────────────────────┤
+  │ Functions named                        │ 6,511 / 26,316   │ 26,316 (100%)                                                            │
+  │                                        │ = 24.7%          │                                                                          │
+  ├────────────────────────────────────────┼──────────────────┼──────────────────────────────────────────────────────────────────────────┤
+  │ Functions decompiled to compilable C++ │ 0                │ 26,316                                                                   │
+  │                                        │ (naming ≠ decomp)│                                                                          │
+  ├────────────────────────────────────────┼──────────────────┼──────────────────────────────────────────────────────────────────────────┤
+  │ Structs/classes in Ghidra type DB      │ 137 (SDK)        │ ~2,000+ (estimated)                                                      │
+  │                                        │ + 53 enums       │                                                                          │
+  ├────────────────────────────────────────┼──────────────────┼──────────────────────────────────────────────────────────────────────────┤
+  │ Vtables resolved to class hierarchies  │ ~30              │ ~500+                                                                    │
+  ├────────────────────────────────────────┼──────────────────┼──────────────────────────────────────────────────────────────────────────┤
+  │ Global variables typed                 │ ~66              │ ~10,000+                                                                 │
+  │                                        │ (50 + 16 SDK)    │                                                                          │
+  ├────────────────────────────────────────┼──────────────────┼──────────────────────────────────────────────────────────────────────────┤
+  │ Third-party headers available          │ 178 (NFSPluginSDK│ EAGL, EAGL4, EAGL4Anim, FERender, Ecstacy, GameSpy SDK, RenderWare,      │
+  │                                        │ mirrored at      │ d3dx9, DirectInput8 — most still proprietary/missing                    │
+  │                                        │ docs/nfsplugin_  │                                                                          │
+  │                                        │ sdk_mw05/)       │                                                                          │
+  ├────────────────────────────────────────┼──────────────────┼──────────────────────────────────────────────────────────────────────────┤
+  │ Build system                           │ none             │ MSVC 7.1 project files + link script                                     │
+  ├────────────────────────────────────────┼──────────────────┼──────────────────────────────────────────────────────────────────────────┤
+  │ Linker output matches                  │ n/a              │ byte-identical PE (or close)                                             │
+  └────────────────────────────────────────┴──────────────────┴──────────────────────────────────────────────────────────────────────────┘
+
+═════════════════════════════════════════════════════════════════════════════
+Goals & timelines
+═════════════════════════════════════════════════════════════════════════════
+
+  ┌──────────────────────────────────────────────────────────────┬────────────────────────────────────────────────────┐
+  │                             Goal                             │                       Status                       │
+  ├──────────────────────────────────────────────────────────────┼────────────────────────────────────────────────────┤
+  │ Full subsystem map, every major system entry-point named     │ ✅ ESSENTIALLY DONE (wave-5)                       │
+  │                                                              │ All 18 major subsystems have memory entries,       │
+  │                                                              │ entry-point addresses, and call graphs.            │
+  ├──────────────────────────────────────────────────────────────┼────────────────────────────────────────────────────┤
+  │ Mod-SDK quality: structs + hook points for top 10 subsystems │ ~70% (NFSPluginSDK covers most; ~3 weeks to polish)│
+  │                                                              │ PVehicle, RBVehicle, AIVehicle, AICopManager,      │
+  │                                                              │ GRaceStatus, FECustomizationRecord typed.          │
+  │                                                              │ Hooks needed for: input bindings, HUD widgets,     │
+  │                                                              │ EAGL physics integrator (worker thread).           │
+  ├──────────────────────────────────────────────────────────────┼────────────────────────────────────────────────────┤
+  │ Pure gameplay layer in editable C++ DLL (sidecar)            │ 1-2 years (unchanged — needs full type recovery    │
+  │                                                              │ for the 67% un-named gameplay code)                │
+  ├──────────────────────────────────────────────────────────────┼────────────────────────────────────────────────────┤
+  │ Full speed.exe → compilable VS project, byte-matching output │ 5-15 years, multi-person (unchanged)               │
+  └──────────────────────────────────────────────────────────────┴────────────────────────────────────────────────────┘
+
+═════════════════════════════════════════════════════════════════════════════
+Completed milestones (this session, 2026-05-14)
+═════════════════════════════════════════════════════════════════════════════
+
+  Subsystems newly mapped (wave-5, 8 parallel agents):
+  ✅ Script VM identified as vanilla Lua 5.0.2 (35-opcode table mapped)
+  ✅ Save/Load: MD5 trailer (not CRC); Documents\NFS Most Wanted\<player>
+  ✅ Cutscenes: On2 VP6 + MAD audio (not Bink); EA SCHl/MVhd container
+  ✅ EA Trax music: 2 systems (interactive + licensed streamed)
+  ✅ Race rules engine: 11-value mode enum cracked; Drift confirmed absent
+  ✅ AI racer behavior: no drafting, no AI nitrous, pure rubber-band
+  ✅ GameBreaker (SpeedBreaker): time-scale @ world_root+0x24
+  ✅ HUD rendering: 28 widgets, event-bus driven (NOT direct C++ tick)
+
+  Tooling/integration:
+  ✅ NFSPluginSDK integrated: 181 addresses + 65 enums + 245 structs + 178 headers
+  ✅ Bulk-rename pipeline (Python + curl bypass for broken MCP bridge)
+  ✅ docs/renames.csv exported (6,511 rows)
+  ✅ docs/sdk_addrs.json / sdk_enums.json / sdk_structs.json published
+
+  Documentation:
+  ✅ ANTI_RE_AND_PATTERNS.md created (407 lines, 18 sections)
+  ✅ ARCHITECTURE.md expanded to 817 lines (wave-5 section added)
+  ✅ PROGRESS.md created (session-by-session log)
+  ✅ MEMORY.md index: 38 line-entries (40 memory files total)
+
+  Stale-claim corrections (caught by wave-5):
+  ✅ 0x56ecc0 isn't input bindings — it's FEPlayerCarDB_GetCarRecordByHandle
+  ✅ MSG_R_BI_DATACRC isn't save CRC — it's an orphan netcode string
+  ✅ 0x504d00 ProcessUIOrHUDElements isn't the HUD walker
+  ✅ Video codec is VP6+MAD, not Bink
+  ✅ Script VM is Lua 5.0.2, not a custom Lua-like
+
+═════════════════════════════════════════════════════════════════════════════
+Pre-wave-5 baseline (for reference)
+═════════════════════════════════════════════════════════════════════════════
+
+  ┌────────────────────────────────────────┬───────────────┐
+  │                 Metric                 │   Pre-wave-5  │
+  ├────────────────────────────────────────┼───────────────┤
+  │ Functions named                        │ ~6,338 / 26K  │
+  │ Subsystems with memory entries         │ 16            │
+  │ Memory entries total                   │ 22            │
+  │ Attribute names cracked                │ 98 / 345      │
+  └────────────────────────────────────────┴───────────────┘
+
+═════════════════════════════════════════════════════════════════════════════
+Open threads (ordered by ROI)
+═════════════════════════════════════════════════════════════════════════════
+
+  HIGH ROI (1 session each):
+  - True input-binding lookup function (0x56ecc0 false-claim left a gap)
+  - 5 mystery attribute hashes — likely need source/PDB to crack
+  - Crack remaining 237 attribute names (compound wordlists)
+  - HUD per-widget update functions (needs live debugger breakpoint)
+
+  MEDIUM ROI:
+  - EAGL physics integrator (worker-thread side)
+  - Lua bytecode .luac disassembly (build patched Lua 5.0 with POS_A=24)
+  - SpeedBreaker energy bar / cooldown globals
+  - Apply remaining 108 SDK structs (need topo-sorted dependency resolution)
+
+  LOW ROI / OUT OF SCOPE:
+  - GameSpy reimpl (OpenSpy-style multiplayer revival) — community effort
+  - Full speed.exe decompilation to compilable C++ — 5-15 year project
+  - ProStreet/Carbon JDLZ verification (apply existing tool)
+
+═════════════════════════════════════════════════════════════════════════════
+Recommended next direction
+═════════════════════════════════════════════════════════════════════════════
+
+  Stop chasing "full source in VS" as a literal goal. The realistic targets are:
+
+  1. Polish mod-SDK quality (~3 weeks)
+     - Apply remaining 108 SDK structs to Ghidra type DB
+     - Document hook patterns for top 10 subsystems
+     - Write a "first-mod tutorial" using the existing rename/struct/enum DB
+     - Validate that a small mod (e.g. unlock-all-cars or infinite-NOS) can be
+       written using only the docs in this repo
+
+  2. Crack the remaining attribute names (~2 weeks intermittent)
+     - Compound wordlist with EA-specific suffix patterns
+     - Cross-reference with NFS Underground 2 / Carbon string tables
+       (likely shared vocabulary)
+     - Target 80%+ of 345 attribute names readable
+
+  3. Live-debugger pass for worker-thread physics (~1 week)
+     - Capture the actual integrator function at runtime
+     - Document the main↔worker buffer exchange protocol
+     - Most-requested mod target (handling tweaks)
+
+  Total realistic timeline to "comprehensive mod-SDK + crackable physics":
+  ~6-8 weeks of focused work at current pace.

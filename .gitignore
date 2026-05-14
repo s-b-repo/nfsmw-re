@@ -1,0 +1,16 @@
+# Ghidra project artifacts (proprietary; large)
+*.gpr
+*.rep/
+*.lock
+*.lock~
+
+# Local game install (copyrighted)
+extracted/
+*.exe
+*.bin
+
+# Editor / OS noise
+.DS_Store
+*.swp
+*.swo
+*~
