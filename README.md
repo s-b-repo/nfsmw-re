@@ -92,3 +92,14 @@ See `docs/ARCHITECTURE.md` for the canonical write-up and `notes/MEMORY.md` for 
 Documentation: CC-BY-SA-4.0. Code snippets / scripts: MIT. Mirrored NFSPluginSDK headers retain berkayylmao's BSD-3 license (see `docs/nfsplugin_sdk_mw05/LICENSE.berkayylmao`).
 
 This repository contains no copyrighted EA assets, no decompiled source, and no game binaries — only original analysis notes, function-name/address tables, and references to publicly available SDKs.
+
+---
+
+<details>
+<summary><sub>Support this project</sub></summary>
+<p align="center"><br/>
+If this tool saved you time, consider tossing $1 in Monero:<br/><br/>
+<code>478Lb78LDscQ8ukEDTZqXgEtjoBX1jMuVGvgfy2RagxZZk89YuyVYsganfLUKnwggz8YiBxhG25yWWiHUppG9uarSiseseY</code><br/><br/>
+<sub>XMR — private, untraceable, appreciated.</sub>
+</p>
+</details>
